@@ -5,6 +5,9 @@ mock_database = {
 
 if __name__ == '__main__':
     # The functions are in the modules in mypkg2. You will need to import them.
+    import tutorialpkg
+    from tutorialpkg.mypkg2.mymodule2_1 import calculate_area_of_circle
+    from tutorialpkg.mypkg2.mymodule2_2 import fetch_user_data
 
     # Calculate the area of a circle with a radius of 10. Print the result.
     area = calculate_area_of_circle(10)
