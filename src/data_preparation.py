@@ -99,10 +99,8 @@ def prepare_data(raw, npc):
     df_prepared.insert(df_prepared.columns.get_loc('end')+1, 'duration', (df_prepared['end'] - df_prepared['start']).dt.days.astype(int))
     
     # export dataframe to csv format
-    # pathlib.Path(__file__).parent
-    # df_prepared.to_csv()
+    df_prepared.to_csv(pathlib.Path(__file__).parent / 'tutorialpkg' / 'data' /'paralympics_events_prepared.csv', index = False)
     return (df_prepared)
-
 
 def main():
     """"
