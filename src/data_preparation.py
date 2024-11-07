@@ -11,7 +11,6 @@ def describe_dataframe(DataFrame):
         Returns:
             none
     """
-    pd.set_option("display.max_columns", None)
     print(DataFrame.shape, "\n")
     print(DataFrame.head(), "\n", DataFrame.tail(), "\n", sep="",)
     print(DataFrame.columns, "\n")
@@ -37,13 +36,15 @@ def change_datatype(df):
     for column in df:
         # method1: change all columns in float64 datatype to int
         if df[column].dtypes == 'float64':
-            print(f"change {column}")
+            # print(f"change {column}")
             # df[column] = df[column].astype(int)
+            return
 
         # method2: change columns given to int datatype
         if column in columns_to_change:
-            print(f"change {column}")
+            # print(f"change {column}")
             # df[column] = df[column].astype(int)
+            return
 
     # change date columns into appropriate DataFrame date format
     df['start'] = pd.to_datetime(df['start'], format='%d/%m/%Y')
@@ -53,12 +54,16 @@ def change_datatype(df):
     return[df]
 
 
+
 def main():
     """"
     Main logic for the program
     Reads the provided databases into DataFrame format
     """
+    # set display ooptions for 
+    pd.set_option("display.max_columns", None)
 
+    # read events_raw.csv file into DF
     try:
         paralympics_events_csv = pathlib.Path(__file__).parent/'tutorialpkg'/'data'/'paralympics_events_raw.csv'      # store provided .csv file
         paralympics_events = pd.read_csv(paralympics_events_csv)                                                      # read csv file into DataFrame
@@ -66,6 +71,7 @@ def main():
         print(f"CSV file not found. Please check the file path. Error: {e}")
         exit()
 
+    #  read all.xlsx file into DF
     try:
         paralympics_all_xlsx = pathlib.Path(__file__).parent / 'tutorialpkg' /'data' / 'paralympics_all_raw.xlsx'            # store provided .xlsx file name
         paralympics_all = pd.read_excel(paralympics_all_xlsx, sheet_name=0)                                                  # read first sheet of Excel file into DataFrame
@@ -73,17 +79,29 @@ def main():
     except FileNotFoundError as e:
         print(f"Excel file not found. Please check the file path. Error: {e}")
         exit()
+
+    # read npc_codes.csv file into DF
+    try:
+        npc_codes_csv = pathlib.Path(__file__).parent/'tutorialpkg'/'data'/'npc_codes.csv'      # store provided .csv file
+        print(npc_codes_csv)
+        npc_codes = pd.read_csv(npc_codes_csv, encoding='utf-8', encoding_errors='ignore', usecols=['Code', 'Name'])    # read csv file into DataFrame, accounting for encoding errors in csv file
+    except FileNotFoundError as e:
+        print(f"CSV file not found. Please check the file path. Error: {e}")
+        exit()
     
     # # call the function to describe the dataframe
     # describe_dataframe(paralympics_events)
     # describe_dataframe(paralympics_all)
     # describe_dataframe(medal_standings)
+    # describe_dataframe(npc_codes)
 
-    change_datatype(paralympics_events)
+    # # change datatypes into desired format
+    # change_datatype(paralympics_events)
+    # change_datatype(paralympics_all)
 
-    # print(paralympics_events.loc[:,['start', 'end']])
-    # print(paralympics_all.loc[:,['start', 'end']])
-
+    # merge events_raw with npc_codes 
+    full_para_events = paralympics_events.merge(npc_codes, how='left', left_on='country', right_on='Name')
+    print(full_para_events.loc[:,['country', 'Code', 'Name']])
 
 
 if __name__ == "__main__":
