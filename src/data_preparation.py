@@ -37,14 +37,7 @@ def change_datatype(df):
         # method1: change all columns in float64 datatype to int
         if df[column].dtypes == 'float64':
             # print(f"change {column}")
-            # df[column] = df[column].astype(int)
-            return
-
-        # method2: change columns given to int datatype
-        if column in columns_to_change:
-            # print(f"change {column}")
-            # df[column] = df[column].astype(int)
-            return
+            df[column] = df[column].astype(int)
 
     # change date columns into appropriate DataFrame date format
     df['start'] = pd.to_datetime(df['start'], format='%d/%m/%Y')
@@ -140,7 +133,7 @@ def main():
         exit()
     
     # call function to merge with npc codes
-    full_data = merge_npc(paralympics_events, npc_codes)
+    df_full = merge_npc(paralympics_events, npc_codes)
 
     # # call the function to describe the dataframe
     # describe_dataframe(paralympics_events)
@@ -148,13 +141,18 @@ def main():
     # describe_dataframe(medal_standings)
     # describe_dataframe(npc_codes)
 
-    # # change datatypes into desired format
-    # change_datatype(paralympics_events)
-    # change_datatype(paralympics_all)'
+    # change datatypes into desired format
+    change_datatype(df_full)
+    # exit()
+    # change_datatype(paralympics_all)
 
     # print unique values
-    print(full_data['type'].unique())           # returns the name of every unique name in that catergory
-    print(full_data['type'].value_counts())     # counts the occurences of each 
+    # print(df_full['type'].unique())           # returns the name of every unique name in that catergory
+    # print(df_full['type'].value_counts())     # counts the occurences of each
+
+    
+    df_full.insert(df_full.columns.get_loc('end')+1, 'duration', (df_full['end'] - df_full['start']).dt.days.astype(int))
+    # print(df_full)
 
 
 if __name__ == "__main__":
