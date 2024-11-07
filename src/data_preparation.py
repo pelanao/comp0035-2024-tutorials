@@ -103,6 +103,9 @@ def main():
     full_para_events = paralympics_events.merge(npc_codes, how='left', left_on='country', right_on='Name')
     print(full_para_events.loc[:,['country', 'Code', 'Name']])
 
+    # delete unwanted columns
+    df_prepared = full_para_events.drop(columns=['URL', 'disabilities_included', 'highlights'], axis=1)
+    print(df_prepared.columns)
 
 if __name__ == "__main__":
     main()
