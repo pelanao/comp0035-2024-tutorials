@@ -20,6 +20,37 @@ def describe_dataframe(DataFrame):
     print(DataFrame.describe(), "\n")
     return
 
+def change_datatype(df):
+    """ Change datatype of columns to desired format.
+        Columns in float64 are changed to int (requires debugging),
+        and columns related to dates are changed to datetime64
+ 
+        Parameters:
+            DataFrame (DataFrame): an imported csv or excel in dataframe format, to be modified
+ 
+        Returns:
+            modified dataframe
+    """
+
+    # change all float64 datatypes to int
+    columns_to_change= ['countries', 'events', 'participants_m', 'participants_f', 'participants']
+    for column in df:
+        # method1: change all columns in float64 datatype to int
+        if df[column].dtypes == 'float64':
+            print(f"change {column}")
+            # df[column] = df[column].astype(int)
+
+        # method2: change columns given to int datatype
+        if column in columns_to_change:
+            print(f"change {column}")
+            # df[column] = df[column].astype(int)
+
+    # change date columns into appropriate DataFrame date format
+    df['start'] = pd.to_datetime(df['start'], format='%d/%m/%Y')
+    df['end'] = pd.to_datetime(df['end'], format='%d/%m/%Y')
+    # print(df.loc[:,['start','end']] )
+
+    return[df]
 
 
 def main():
@@ -43,9 +74,16 @@ def main():
         print(f"Excel file not found. Please check the file path. Error: {e}")
         exit()
     
-    describe_dataframe(paralympics_events)
-    describe_dataframe(paralympics_all)
-    describe_dataframe(medal_standings)
+    # # call the function to describe the dataframe
+    # describe_dataframe(paralympics_events)
+    # describe_dataframe(paralympics_all)
+    # describe_dataframe(medal_standings)
+
+    change_datatype(paralympics_events)
+
+    # print(paralympics_events.loc[:,['start', 'end']])
+    # print(paralympics_all.loc[:,['start', 'end']])
+
 
 
 if __name__ == "__main__":
