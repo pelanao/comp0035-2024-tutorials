@@ -60,7 +60,7 @@ def merge_npc(raw, npc):
             npc (DataFrame): pandas dataframe with country codes
  
         Returns:
-            merged(DataFrame): merged dataframe
+            df_prepared(DataFrame): merged and prepared dataframe
     """
     # fix incompatible country names in the raw file
     raw = country_name(raw)
@@ -80,6 +80,11 @@ def merge_npc(raw, npc):
     df_prepared = df_prepared.reset_index(drop=True)   # reset index of DF to skip dropped rows
     missing_rows = df_prepared[df_prepared.isna().any(axis=1)]  
     # print(f"\nMissing rows:\n{missing_rows}\n")     # confirm no rows have missing data
+
+    # from 'type' column, remove whitespace and change to lowercase
+    df_prepared['type'] = df_prepared['type'].str.strip()
+    df_prepared['type'] = df_prepared['type'].str.lower()
+    return (df_prepared)
 
 
 def country_name(DF):
@@ -135,7 +140,7 @@ def main():
         exit()
     
     # call function to merge with npc codes
-    merge_npc(paralympics_events, npc_codes)
+    full_data = merge_npc(paralympics_events, npc_codes)
 
     # # call the function to describe the dataframe
     # describe_dataframe(paralympics_events)
@@ -145,7 +150,11 @@ def main():
 
     # # change datatypes into desired format
     # change_datatype(paralympics_events)
-    # change_datatype(paralympics_all)
+    # change_datatype(paralympics_all)'
+
+    # print unique values
+    print(full_data['type'].unique())           # returns the name of every unique name in that catergory
+    print(full_data['type'].value_counts())     # counts the occurences of each 
 
 
 if __name__ == "__main__":
