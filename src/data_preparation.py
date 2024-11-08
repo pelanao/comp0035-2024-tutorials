@@ -61,9 +61,6 @@ def change_datatype(df):
     df['start'] = pd.to_datetime(df['start'], format='%d/%m/%Y')
     df['end'] = pd.to_datetime(df['end'], format='%d/%m/%Y')
 
-    
-
-
     # standardise 'type' column by removing whitespace and changing to lowercase
     df['type'] = df['type'].str.strip()
     df['type'] = df['type'].str.lower()
@@ -135,15 +132,11 @@ def main():
         print(f"CSV file not found. Please check the file path. Error: {e}")
         exit()
     
-
-    # call function to merge with npc codes
-    # df_full = merge_npc(paralympics_events, npc_codes)
-
-    # # call the function to describe the dataframe
-    # describe_dataframe(paralympics_events)
-    # describe_dataframe(paralympics_all)
-    # describe_dataframe(medal_standings)
-    # describe_dataframe(npc_codes)
+    # call the function to describe the dataframe
+    describe_dataframe(paralympics_events)
+    describe_dataframe(paralympics_all)
+    describe_dataframe(medal_standings)
+    describe_dataframe(npc_codes)
 
     #  merge and prepare events_raw and npc_codes
     prepared_df = prepare_data(paralympics_events, npc_codes)
