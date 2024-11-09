@@ -15,8 +15,7 @@ def histogram(df):
             df (DataFrame): pandas dataframe with event data
  
         Returns:
-            ... (pandas plot): merged and prepared dataframe
-
+            histograms of relevant columns in the dataframe
     """
     
     # Create a histogram of the DataFrame
@@ -38,6 +37,31 @@ def histogram(df):
     plt.show()
 
 
+def boxplot(df):
+    """"
+    Generates a boxplot 
+
+    Parameters:
+            df (DataFrame): pandas dataframe with event data
+ 
+        Returns:
+            boxplots of relevant columns in the dataframe
+
+    """
+    
+    # Create a boxplot of the DataFrame
+    df.plot.box(subplots = True, sharey = False)
+    # df.boxplot(subplots = True, sharey = False)       # pd.boxplot doesn't work with the parameters subplots or sharey.
+
+    # acknowledge duration outlier
+    print(df[['host','duration']])      # host has two names as paralympics were set in two locations
+
+    # save to png image file
+    plt.savefig('bp_example.png')
+    
+    # Show the plots
+    plt.show()      # last command as it is a blocking function; pauses execution of script
+
 
 def main():
     """"
@@ -52,8 +76,8 @@ def main():
         exit()
 
     # calls functions to plot figures relevant to the database 
-    histogram(df_events)
-
+    # histogram(df_events)
+    boxplot(df_events)
 
     return
 
