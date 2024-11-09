@@ -6,7 +6,7 @@ from pathlib import Path
 pd.set_option("display.max_columns", None)
 
 
-def histogram(df):
+def histogram(df, columns = None, type = None):
     """"
     Generates a histogram for each column of the dataset
     Generates a histogram for each of the specified columns 'participants_m' and 'participants_f'
@@ -14,28 +14,22 @@ def histogram(df):
     Parameters:
             df (DataFrame): pandas dataframe with event data
  
-        Returns:
-            histograms of relevant columns in the dataframe
+    Returns:
+        histograms of relevant columns in the dataframe
     """
+
+    # Create a histogram of the DataFrame with the specified conditions
+    if columns and type:        # create a histogram of the specified columns only, one for each season
+        for season in type:
+            df_season = df[df['type'] == season]
+            df_season[columns].hist()
+    elif columns:         # create a histogram of the specified columns only; works due to truthiness of non-empty list
+        df[columns].hist()
+    else:       # create a histogram of the whole dataframe
+        df.hist()
     
-    # Create a histogram of the DataFrame
-    df.hist()
-
-    # Create a histogram of the specified columns in the DataFrame
-    # df[['participants_m', 'participants_f']].hist()
-    df.loc[:,['participants_m', 'participants_f']].hist()
-
-    # Filter the DataFrame to select only rows where 'type' is 'summer' or 'winter respectively
-    ### syntax: df = df[df['column_name'] == filter_value]
-    summer_df = df[df['type'] == 'summer']
-    winter_df = df[df['type'] == 'winter']
-    # generate respective histograms
-    summer_df.loc[:,['participants_m', 'participants_f']].hist()
-    winter_df.loc[:,['participants_m', 'participants_f']].hist()
-
     # Show the plots
     plt.show()
-
 
 def boxplot(df):
     """"
@@ -44,11 +38,10 @@ def boxplot(df):
     Parameters:
             df (DataFrame): pandas dataframe with event data
  
-        Returns:
-            boxplots of relevant columns in the dataframe
-
+    Returns:
+        boxplots of relevant columns in the dataframe
     """
-    
+
     # Create a boxplot of the DataFrame
     df.plot.box(subplots = True, sharey = False)
     # df.boxplot(subplots = True, sharey = False)       # pd.boxplot doesn't work with the parameters subplots or sharey.
@@ -62,6 +55,28 @@ def boxplot(df):
     # Show the plots
     plt.show()      # last command as it is a blocking function; pauses execution of script
 
+def timeseries(df):
+    """"
+    Generates a timeseries line chart 
+
+    Parameters:
+            df (DataFrame): pandas dataframe with event data
+ 
+    Returns:
+        boxplots of relevant columns in the dataframe
+    """
+
+    # Create a boxplot of the DataFrame
+    df.plot()
+
+    # acknowledge duration outlier
+    # print(df[['host','duration']])      # host has two names as paralympics were set in two locations
+
+    # save to png image file
+    # plt.savefig('bp_example.png')
+    
+    # Show the plots
+    plt.show()      # last command as it is a blocking function; pauses execution of script
 
 def main():
     """"
@@ -76,8 +91,21 @@ def main():
         exit()
 
     # calls functions to plot figures relevant to the database 
+
+    ##  calls histogram function
     # histogram(df_events)
-    boxplot(df_events)
+
+    ## calls histogram for specified columns
+    participant_columns = ['participants_m', 'participants_f']
+    # histogram(df_events, participant_columns)
+
+    ## calls histogram for specified columns and type
+    seasons = ['summer', 'winter']
+    histogram(df_events, participant_columns, seasons)
+
+    # boxplot(df_events)
+    # timeseries(df_events)
+
 
     return
 
