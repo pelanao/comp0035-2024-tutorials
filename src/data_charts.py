@@ -50,7 +50,7 @@ def boxplot(df):
     print(df[['host','duration']])      # host has two names as paralympics were set in two locations
 
     # save to png image file
-    plt.savefig('bp_example.png')
+    # plt.savefig('bp_example.png')
     
     # Show the plots
     plt.show()      # last command as it is a blocking function; pauses execution of script
@@ -66,15 +66,14 @@ def timeseries(df):
         boxplots of relevant columns in the dataframe
     """
 
-    # Create a boxplot of the DataFrame
-    df.plot()
+    # sort values by date order
+    df = df.sort_values(by='start')
 
-    # acknowledge duration outlier
-    # print(df[['host','duration']])      # host has two names as paralympics were set in two locations
+    # Create a lineplot of participants over time
+    df.plot(x='start' , y='participants')
+    # create separate lineplots for winter and summer events
+    df.groupby('type').plot(x='start' , y='participants')
 
-    # save to png image file
-    # plt.savefig('bp_example.png')
-    
     # Show the plots
     plt.show()      # last command as it is a blocking function; pauses execution of script
 
@@ -90,21 +89,21 @@ def main():
         print(f"CSV file not found. Please check the file path. Error: {e}")
         exit()
 
-    # calls functions to plot figures relevant to the database 
-
+    ### calls functions to plot figures relevant to the database 
     ##  calls histogram function
     # histogram(df_events)
-
     ## calls histogram for specified columns
     participant_columns = ['participants_m', 'participants_f']
     # histogram(df_events, participant_columns)
-
     ## calls histogram for specified columns and type
     seasons = ['summer', 'winter']
-    histogram(df_events, participant_columns, seasons)
+    # histogram(df_events, participant_columns, seasons)
 
+    # calls boxplot function
     # boxplot(df_events)
-    # timeseries(df_events)
+
+    # calls timeseries function
+    timeseries(df_events)
 
 
     return
