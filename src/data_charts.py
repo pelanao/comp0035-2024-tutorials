@@ -70,9 +70,9 @@ def timeseries(df):
     df = df.sort_values(by='start')
 
     # Create a lineplot of participants over time
-    df.plot(x='start' , y='participants')
+    df.plot(x='start' , y='participants', xlabel='Date', ylabel='# of participants', legend=False)
     # create separate lineplots for winter and summer events
-    df.groupby('type').plot(x='start' , y='participants')
+    df.groupby('type').plot(x='start' , y='participants', xlabel='Date', ylabel='# of participants', legend=False)
 
     # Show the plots
     plt.show()      # last command as it is a blocking function; pauses execution of script
