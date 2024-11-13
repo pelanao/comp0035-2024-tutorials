@@ -1,6 +1,9 @@
 import pathlib
 import pandas as pd
 
+# set display ooptions for pandas
+pd.set_option("display.max_columns", None)
+
 def describe_dataframe(DataFrame):
     """ Describe an imported data file stored in DataFrame format. Will print the shape, the head and tail
         the label of all columns, the data type of ech column, the dataframe information and descriptive statistics.
@@ -104,9 +107,6 @@ def main():
     Main logic for the program
     Reads the provided databases into DataFrame format
     """
-    # set display ooptions for pandas
-    pd.set_option("display.max_columns", None)
-
     # read events_raw.csv file into DF
     try:
         paralympics_events_csv = pathlib.Path(__file__).parent/'tutorialpkg'/'data'/'paralympics_events_raw.csv'      # store provided .csv file
