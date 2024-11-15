@@ -1,6 +1,7 @@
 
 import pathlib
 import pandas as pd
+import sqlite3
 
 def describe_dataframe(DataFrame):
     """ Describe an imported data file stored in DataFrame format. Will print the shape, the head and tail
@@ -68,9 +69,6 @@ def main():
     df_events = change_datatype(df_events)
     print(df_events.dtypes)
     
-
-
-
 
 if __name__ == "__main__":
     main()
