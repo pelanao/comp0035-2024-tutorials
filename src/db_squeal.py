@@ -9,10 +9,10 @@ def squeal(df, db_path=None):
     """ Creates an un-normalised table from a dataframe and saves it to a database file
 
         Parameters:
-            raw (DataFrame): 
+            df (DataFrame): dataframe with student_data.csv
  
         Returns:
-            database
+            squeal.db (database): generated in src folder
     """
     # file name for database
     db_path = Path(__file__).parent / 'squeal.db'
@@ -38,11 +38,8 @@ def main():
     except FileNotFoundError as e:
         print(f"CSV file not found. Please check the file path. Error: {e}")
 
+    # converts dataframe into sql database
     squeal(db_squeal)
-
-    # print(db_squeal.columns)
-
-
 
 
 
