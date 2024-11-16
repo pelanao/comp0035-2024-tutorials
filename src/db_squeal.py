@@ -30,19 +30,16 @@ def unnormal_db(df, db_path=None, table_name=None):
     return
 
 
-def normal_db(df, db_path):
-    """ Creates an normalised table from a dataframe and saves it to a database file
-
+def normal_db(db_path):
+    """ Creates a normalised database and tables in a database file
 
         Parameters:
-            df (DataFrame): input dataframe
             db_path (Path): desired file name of new database
             table_name (str): desired table name within new database
  
         Returns:
             db (database): generated in src folder
     """
-
 
     # variable_sql = '''CREATE TABLE table_name_1
                     #  (
@@ -80,14 +77,10 @@ def normal_db(df, db_path):
                             FOREIGN KEY (teacher_id) REFERENCES teacher(teacher_id) ON UPDATE CASCADE ON DELETE SET NULL);
                             '''
     
-    # print(enrollment_sql)
-    # print(type(enrollment_sql))
-
     # Create a connection to the database file path using sqlite3.
     conn = sqlite3.connect(db_path)
     # create a cursor object using the connection
     cursor = conn.cursor()
-
     # enable FOREIGN KEYS explicitly for each database
     cursor.execute('PRAGMA foreign_keys = ON;')
     # Commit the changes
@@ -99,7 +92,6 @@ def normal_db(df, db_path):
     cursor.execute('DROP TABLE IF EXISTS teacher;')
     cursor.execute('DROP TABLE IF EXISTS student;')
 
-
     # run commands to create tables in database
     # The order is important, you cannot create a child table before the parent table where there are relationships.
     cursor.execute(student_sql)
@@ -109,9 +101,66 @@ def normal_db(df, db_path):
 
     # Commit the changes
     conn.commit()
+
+
+    query = '''SELECT * 
+            FROM course'''
+    # cursor.execute(query)
+    # # print(query)
+    # result = cursor.fetchone()
+    # print(result)
+
+
     # close connection
     conn.close()
     return
+
+
+def add_data(df, db_path):
+    """ Adds data from the pandas datafrane to the normalised tables in a database file
+
+        Parameters:
+            df (DataFrame): input dataframe
+            db_path (Path): desired file name of new database
+            table_name (str): desired table name within new database
+ 
+        Returns:
+            db (database): generated in src folder
+    """
+    # Create a connection to the database file path using sqlite3.
+    conn = sqlite3.connect(db_path)
+    # create a cursor object using the connection
+    cursor = conn.cursor()
+    # enable FOREIGN KEYS explicitly for each database
+    cursor.execute('PRAGMA foreign_keys = ON;')
+    # Commit the changes
+    conn.commit()
+
+    # add data to student table
+    student_sql = 'INSERT INTO student (student_name, student_email) VALUES (?, ?)'
+    student_df = df[['student_name', 'student_email']].drop_duplicates()
+    student_data = student_df.values.tolist()
+    cursor.executemany(student_sql, student_data)
+
+    # add data to teacher table
+    teacher_sql = 'INSERT INTO teacher (teacher_name, teacher_email) VALUES (?, ?)'
+    teacher_df = df[['teacher_name', 'teacher_email']].drop_duplicates()
+    teacher_data = teacher_df.values.tolist()
+    cursor.executemany(teacher_sql, teacher_data)
+
+    # add data to teacher table
+    course_sql = 'INSERT INTO course (course_name, course_code, course_schedule, course_location) VALUES (?, ?, ?, ?)'
+    course_df = df[['course_name', 'course_code', 'course_schedule', 'course_location']].drop_duplicates()
+    course_data = course_df.values.tolist()
+    cursor.executemany(course_sql, course_data)
+
+    # Commit the changes
+    conn.commit()
+
+    # close connection
+    conn.close()
+
+
 
 
 def main():
@@ -129,10 +178,14 @@ def main():
     unnormal_db_name = Path(__file__).parent / 'tutorialpkg' / 'data_db_activity' / 'enrollments_unnormalised.db'
 
     # converts dataframe into an unnormalised table within sql database
-    unnormal_db(df_student, unnormal_db_name, 'enrollments')
+    # unnormal_db(df_student, unnormal_db_name, 'enrollments')
 
     normal_db_name = Path(__file__).parent / 'tutorialpkg' / 'data_db_activity' / 'enrollment_normalised.db'
-    normal_db(df_student, normal_db_name)
+    normal_db(normal_db_name)
+
+    
+    add_data(df_student, normal_db_name)  
+
 
 
 if __name__ == "__main__":
