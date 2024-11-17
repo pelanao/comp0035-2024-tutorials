@@ -102,6 +102,7 @@ def prepare_data(raw, npc):
     df_prepared.to_csv(pathlib.Path(__file__).parent / 'tutorialpkg' / 'data' /'paralympics_events_prepared.csv', index = False)
     return (df_prepared)
 
+
 def main():
     """"
     Main logic for the program
