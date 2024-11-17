@@ -25,9 +25,10 @@ def unnormal_db(df, db_path=None, table_name=None):
     # save df as table_name table within db_path file using dataframe.to_sql
     df.to_sql(table_name, conn, if_exists='replace', index=False)
 
+    # Commit the changes
+    conn.commit()
     # close connection
     conn.close()
-    return
 
 
 def normal_db(db_path):
@@ -101,19 +102,8 @@ def normal_db(db_path):
 
     # Commit the changes
     conn.commit()
-
-
-    query = '''SELECT * 
-            FROM course'''
-    # cursor.execute(query)
-    # # print(query)
-    # result = cursor.fetchone()
-    # print(result)
-
-
     # close connection
     conn.close()
-    return
 
 
 def add_data(df, db_path):
@@ -127,14 +117,10 @@ def add_data(df, db_path):
         Returns:
             db (database): generated in src folder
     """
-    # Create a connection to the database file path using sqlite3.
-    conn = sqlite3.connect(db_path)
-    # create a cursor object using the connection
-    cursor = conn.cursor()
-    # enable FOREIGN KEYS explicitly for each database
-    cursor.execute('PRAGMA foreign_keys = ON;')
-    # Commit the changes
-    conn.commit()
+    conn = sqlite3.connect(db_path)                 # Create a connection to the database file path using sqlite3.
+    cursor = conn.cursor()                          # create a cursor object using the connection
+    cursor.execute('PRAGMA foreign_keys = ON;')     # enable FOREIGN KEYS explicitly for each database
+    conn.commit()                                   # Commit the changes
 
     # add data to student table
     student_sql = 'INSERT INTO student (student_name, student_email) VALUES (?, ?)'
@@ -154,13 +140,39 @@ def add_data(df, db_path):
     course_data = course_df.values.tolist()
     cursor.executemany(course_sql, course_data)
 
+    # Iterate all the rows in the dataframe to find student, teacher and course of of each
+    for index, row in df.iterrows():
+        # Find student_id by using student_email, unique for every student in the table
+        student_email = row['student_email']    # Extract email value from the row being iterated
+        # Define the sql select query.
+        select_student_sql = f'SELECT student_id FROM student WHERE student_email = "{student_email}"'
+        # select student_id based on the student_email, assign first tuple to a variable result
+        result = cursor.execute(select_student_sql).fetchone()
+        # Extract integer student_id from tuple by specifying the first value
+        s_id = result[0]
+        
+        # Find teacher_id
+        teacher_email = row['teacher_email']
+        select_teacher_sql = f'SELECT teacher_id FROM teacher WHERE teacher_email = "{teacher_email}"'
+        result = cursor.execute(select_teacher_sql).fetchone()
+        t_id = result[0]
+        
+        
+        # Find course_id
+        course_code = row['course_code']
+        select_course_sql =  f'SELECT course_id FROM course WHERE course_code = "{course_code}"'
+        result = cursor.execute(select_course_sql).fetchone()
+        c_id = result[0]
+        
+        # Insert new row into the enrollment table
+        enrollment_insert_sql = 'INSERT INTO enrollment (student_id, course_id, teacher_id) VALUES (?, ?, ?)'
+        student_values = (s_id, t_id, c_id)
+        cursor.execute(enrollment_insert_sql, student_values)
+
     # Commit the changes
     conn.commit()
-
     # close connection
     conn.close()
-
-
 
 
 def main():
@@ -178,14 +190,12 @@ def main():
     unnormal_db_name = Path(__file__).parent / 'tutorialpkg' / 'data_db_activity' / 'enrollments_unnormalised.db'
 
     # converts dataframe into an unnormalised table within sql database
-    # unnormal_db(df_student, unnormal_db_name, 'enrollments')
+    unnormal_db(df_student, unnormal_db_name, 'enrollments')
 
+    # generates a normalised database in the file path specified
     normal_db_name = Path(__file__).parent / 'tutorialpkg' / 'data_db_activity' / 'enrollment_normalised.db'
     normal_db(normal_db_name)
-
-    
     add_data(df_student, normal_db_name)  
-
 
 
 if __name__ == "__main__":
