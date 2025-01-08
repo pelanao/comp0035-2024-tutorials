@@ -140,8 +140,8 @@ def add_data(df, db_path):
     course_data = course_df.values.tolist()
     cursor.executemany(course_sql, course_data)
 
-    # Iterate all the rows in the dataframe to find student, teacher and course of of each
-    for index, row in df.iterrows():
+    # Insert new row into the enrollment table
+    for index, row in df.iterrows():    # Iterate all the rows in the dataframe to find student, teacher and course of of each
         # Find student_id by using student_email, unique for every student in the table
         student_email = row['student_email']    # Extract email value from the row being iterated
         # Define the sql select query.
@@ -156,7 +156,6 @@ def add_data(df, db_path):
         select_teacher_sql = f'SELECT teacher_id FROM teacher WHERE teacher_email = "{teacher_email}"'
         result = cursor.execute(select_teacher_sql).fetchone()
         t_id = result[0]
-        
         
         # Find course_id
         course_code = row['course_code']
